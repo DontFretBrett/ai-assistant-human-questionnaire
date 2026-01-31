@@ -57,16 +57,18 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2"
         >
-          <div className="flex items-center justify-center gap-2 relative">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight">
-              AI Assistant Human Questionnaire
-            </h1>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-2 relative">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-8 h-8 text-primary" />
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-center sm:text-left">
+                AI Assistant Human Questionnaire
+              </h1>
+            </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="absolute right-0 rounded-full"
+              className="absolute -top-2 -right-2 sm:static sm:rounded-full"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
