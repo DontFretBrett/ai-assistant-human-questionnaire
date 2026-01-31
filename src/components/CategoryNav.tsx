@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { categories } from '@/data/questions'
 import type { CategoryId, QuestionnaireData } from '@/data/types'
 import {
+  User,
   Briefcase,
   Palette,
   Users,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react'
 
 const iconMap: Record<string, LucideIcon> = {
+  User,
   Briefcase,
   Palette,
   Users,

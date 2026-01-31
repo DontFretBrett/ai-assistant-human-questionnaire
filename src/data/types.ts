@@ -1,4 +1,5 @@
 export type CategoryId =
+  | 'basics'
   | 'work'
   | 'hobbies'
   | 'friends'

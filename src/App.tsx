@@ -15,7 +15,7 @@ import { FileDown, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun } from 'l
 
 function App() {
   const [data, setData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('work')
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('basics')
   const [exportOpen, setExportOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
@@ -76,7 +76,7 @@ function App() {
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Help AI assistants understand you better by answering questions about yourself.
-            Your responses are stored locally and can be exported as a document.
+            Your responses are only stored in your browser and can be exported as a document.
           </p>
         </motion.header>
 
