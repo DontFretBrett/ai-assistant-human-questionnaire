@@ -147,7 +147,7 @@ function App() {
                   {!isLastCategory ? (
                     <div className="pt-4 border-t">
                       <Button 
-                        onClick={handleNextCategory}
+                        onMouseDown={handleNextCategory}
                         className="w-full gap-2"
                         variant="default"
                       >
@@ -158,7 +158,7 @@ function App() {
                   ) : (
                     <div className="pt-4 border-t">
                       <Button 
-                        onClick={handleDone}
+                        onMouseDown={handleDone}
                         className="w-full gap-2"
                         variant="default"
                       >
