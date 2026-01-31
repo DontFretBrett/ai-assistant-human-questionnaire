@@ -51,7 +51,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased text-[17px];
+    @apply bg-background text-foreground antialiased text-[20px];
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
