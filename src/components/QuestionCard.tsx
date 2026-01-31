@@ -21,14 +21,14 @@ export function QuestionCard({ question, value, onChange, index }: QuestionCardP
       <Card className="overflow-hidden">
         <CardContent className="p-4">
           <label className="block space-y-3">
-            <span className="text-sm font-medium text-foreground leading-relaxed">
+            <span className="text-lg font-semibold text-foreground leading-relaxed">
               {question.text}
             </span>
             <Textarea
               value={value}
               onChange={(e) => onChange(e.target.value)}
               placeholder={question.placeholder}
-              className="min-h-[100px] transition-all focus:min-h-[140px]"
+              className="min-h-[100px] text-base transition-all focus:min-h-[140px]"
             />
           </label>
         </CardContent>
