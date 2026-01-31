@@ -53,8 +53,8 @@ export function CategoryNav({ activeCategory, onCategoryChange, data }: Category
   }
 
   return (
-    <nav className="w-full overflow-x-auto pb-2">
-      <div className="flex gap-2 min-w-max px-1">
+    <nav className="w-full">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-1.5 px-0.5">
         {categories.map((category) => {
           const Icon = iconMap[category.icon]
           const progress = getCategoryProgress(category.id)
@@ -65,7 +65,7 @@ export function CategoryNav({ activeCategory, onCategoryChange, data }: Category
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
               className={cn(
-                "relative flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[80px]",
+                "relative flex flex-col items-center gap-0.5 px-1 py-1.5 rounded-md transition-colors w-full",
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
@@ -73,11 +73,11 @@ export function CategoryNav({ activeCategory, onCategoryChange, data }: Category
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-xs font-medium truncate max-w-[70px]">
+              <Icon className="w-4 h-4" />
+              <span className="text-[10px] leading-tight font-medium truncate w-full px-0.5 text-center">
                 {category.name}
               </span>
-              <div className="absolute bottom-0 left-1 right-1 h-1 bg-black/10 rounded-full overflow-hidden">
+              <div className="absolute bottom-0 left-0.5 right-0.5 h-0.5 bg-black/10 rounded-full overflow-hidden">
                 <motion.div
                   className={cn(
                     "h-full rounded-full",
