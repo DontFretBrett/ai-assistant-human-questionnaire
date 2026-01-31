@@ -15,7 +15,7 @@ import { FileDown, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun } from 'l
 
 function App() {
   const [data, setData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('work')
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('basics')
   const [exportOpen, setExportOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 

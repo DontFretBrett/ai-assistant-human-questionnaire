@@ -2,6 +2,18 @@ import type { Category } from './types'
 
 export const categories: Category[] = [
   {
+    id: 'basics',
+    name: 'Basics',
+    icon: 'User',
+    description: 'Fundamental information about you',
+    questions: [
+      { id: 'basics_name', text: 'What is your full name?', placeholder: 'First and last name' },
+      { id: 'basics_nickname', text: 'What would you like to be called?', placeholder: 'Nickname or preferred name' },
+      { id: 'basics_location', text: 'Where do you live?', placeholder: 'City, state/province, country' },
+      { id: 'basics_birthday', text: 'When is your birthday?', placeholder: 'Month, day, year (or just month/day)' },
+    ],
+  },
+  {
     id: 'work',
     name: 'Work',
     icon: 'Briefcase',
