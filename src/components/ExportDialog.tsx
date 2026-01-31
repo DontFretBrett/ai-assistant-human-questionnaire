@@ -52,6 +52,9 @@ export function ExportDialog({ open, onOpenChange, data }: ExportDialogProps) {
     lines.push('---')
     lines.push('')
     lines.push(`*Generated on ${new Date().toLocaleDateString()}*`)
+    lines.push('')
+    lines.push(`*Generated at: [ai-assistant-human-questionnaire.vercel.app](https://ai-assistant-human-questionnaire.vercel.app/)*`)
+    lines.push(`*Created by: [www.brettsanders.com](https://www.brettsanders.com)*`)
 
     return lines.join('\n')
   }
