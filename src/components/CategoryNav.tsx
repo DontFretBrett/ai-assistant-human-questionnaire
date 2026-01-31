@@ -54,7 +54,7 @@ export function CategoryNav({ activeCategory, onCategoryChange, data }: Category
 
   return (
     <nav className="w-full">
-      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-1.5">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-1.5 px-0.5">
         {categories.map((category) => {
           const Icon = iconMap[category.icon]
           const progress = getCategoryProgress(category.id)
