@@ -10,7 +10,7 @@ import { ExportDialog } from '@/components/ExportDialog'
 import { Disclaimer } from '@/components/Disclaimer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileDown, Sparkles, RotateCcw } from 'lucide-react'
+import { FileDown, Sparkles, RotateCcw, ChevronRight, Check } from 'lucide-react'
 
 function App() {
   const [data, setData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
@@ -31,6 +31,21 @@ function App() {
       setData({})
     }
   }
+
+  const handleNextCategory = () => {
+    const currentIndex = categories.findIndex(c => c.id === activeCategory)
+    if (currentIndex < categories.length - 1) {
+      const nextCategory = categories[currentIndex + 1]
+      setActiveCategory(nextCategory.id)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const handleDone = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const isLastCategory = categories.findIndex(c => c.id === activeCategory) === categories.length - 1
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,6 +131,29 @@ function App() {
                       index={index}
                     />
                   ))}
+                  {!isLastCategory ? (
+                    <div className="pt-4 border-t">
+                      <Button 
+                        onClick={handleNextCategory}
+                        className="w-full gap-2"
+                        variant="default"
+                      >
+                        Next Category
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="pt-4 border-t">
+                      <Button 
+                        onClick={handleDone}
+                        className="w-full gap-2"
+                        variant="default"
+                      >
+                        Done
+                        <Check className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
