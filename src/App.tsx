@@ -181,6 +181,9 @@ function App() {
           transition={{ delay: 0.6 }}
           className="text-center text-xs text-muted-foreground py-4"
         >
+          <p className="text-center text-xs text-muted-foreground py-4">
+            Made by <a href="https://www.brettsanders.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">Brett Sanders</a> and his <a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">OpenClaw</a> bot.
+          </p>
           <p>
             AI Assistant Human Questionnaire - Your data stays on your device.
           </p>
