@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useTheme } from '@/hooks/useTheme'
 import { categories } from '@/data/questions'
 import type { CategoryId, QuestionnaireData } from '@/data/types'
 import { CategoryNav } from '@/components/CategoryNav'
@@ -10,12 +11,13 @@ import { ExportDialog } from '@/components/ExportDialog'
 import { Disclaimer } from '@/components/Disclaimer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileDown, Sparkles, RotateCcw, ChevronRight, Check } from 'lucide-react'
+import { FileDown, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun } from 'lucide-react'
 
 function App() {
   const [data, setData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
   const [activeCategory, setActiveCategory] = useState<CategoryId>('work')
   const [exportOpen, setExportOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   const currentCategory = categories.find(c => c.id === activeCategory)
 
@@ -55,11 +57,20 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 relative">
             <Sparkles className="w-8 h-8 text-primary" />
             <h1 className="text-3xl font-bold tracking-tight">
               AI Assistant Human Questionnaire
             </h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="absolute right-0 rounded-full"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </Button>
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Help AI assistants understand you better by answering questions about yourself.
