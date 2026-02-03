@@ -57,7 +57,7 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
 
   const parseMarkdown = (markdown: string): QuestionnaireData => {
     const data: QuestionnaireData = {}
-    const lines = markdown.split('\n')
+    const lines = markdown.split(/\r\n|\r|\n/)
     
     let currentQuestion: string | null = null
     let currentAnswer: string[] = []
