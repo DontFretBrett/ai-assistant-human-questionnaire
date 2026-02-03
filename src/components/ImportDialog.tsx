@@ -38,7 +38,6 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
     const data: QuestionnaireData = {}
     const lines = markdown.split('\n')
     
-    let currentCategory: string | null = null
     let currentQuestion: string | null = null
     let currentAnswer: string[] = []
     
@@ -77,7 +76,6 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
           }
         }
         
-        currentCategory = trimmedLine.replace('## ', '').trim()
         currentQuestion = null
         currentAnswer = []
         continue
