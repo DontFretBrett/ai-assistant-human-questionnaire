@@ -19,20 +19,41 @@ interface ImportDialogProps {
   onImport: (data: QuestionnaireData) => void
 }
 
+// Create a map of question text to question ID for quick lookup (static, so module-level)
+const questionTextToId = new Map<string, string>()
+categories.forEach(category => {
+  category.questions.forEach(question => {
+    questionTextToId.set(question.text, question.id)
+  })
+})
+
 export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps) {
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [importedCount, setImportedCount] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Create a map of question text to question ID for quick lookup
-  const questionTextToId = new Map<string, string>()
-  categories.forEach(category => {
-    category.questions.forEach(question => {
-      questionTextToId.set(question.text, question.id)
-    })
-  })
+  // Reset state when dialog closes
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      // Clear any pending timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      // Reset all state
+      setImporting(false)
+      setError(null)
+      setSuccess(false)
+      setImportedCount(0)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+    onOpenChange(newOpen)
+  }
 
   const parseMarkdown = (markdown: string): QuestionnaireData => {
     const data: QuestionnaireData = {}
@@ -40,10 +61,34 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
     
     let currentQuestion: string | null = null
     let currentAnswer: string[] = []
+    let inMetadataSection = false
     
     for (let i = 0; i < lines.length; i++) {
       const rawLine = lines[i]
       const trimmedLine = rawLine.trim()
+      
+      // Check for metadata separator (---) - everything after this is metadata
+      if (trimmedLine === '---') {
+        // Save previous answer if exists before metadata
+        if (currentQuestion && currentAnswer.length > 0) {
+          const questionId = questionTextToId.get(currentQuestion)
+          if (questionId) {
+            const answer = currentAnswer.join('\n').replace(/^\s+|\s+$/g, '')
+            if (answer) {
+              data[questionId] = answer
+            }
+          }
+          currentQuestion = null
+          currentAnswer = []
+        }
+        inMetadataSection = true
+        continue
+      }
+      
+      // Skip metadata lines (only after --- separator)
+      if (inMetadataSection && trimmedLine.startsWith('*')) {
+        continue
+      }
       
       // Check for headers first
       if (trimmedLine.startsWith('### ')) {
@@ -81,25 +126,8 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
         continue
       }
       
-      // Skip metadata lines
-      if (trimmedLine.startsWith('*') || trimmedLine.startsWith('---')) {
-        // Save previous answer if exists before metadata
-        if (currentQuestion && currentAnswer.length > 0) {
-          const questionId = questionTextToId.get(currentQuestion)
-          if (questionId) {
-            const answer = currentAnswer.join('\n').replace(/^\s+|\s+$/g, '')
-            if (answer) {
-              data[questionId] = answer
-            }
-          }
-          currentQuestion = null
-          currentAnswer = []
-        }
-        continue
-      }
-      
-      // Accumulate answer text (preserve empty lines within answers)
-      if (currentQuestion) {
+      // Accumulate answer text (preserve empty lines within answers, including bullet points)
+      if (currentQuestion && !inMetadataSection) {
         currentAnswer.push(rawLine)
       }
     }
@@ -143,15 +171,19 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
       setSuccess(true)
       
       // Wait a moment to show success, then import
-      setTimeout(() => {
-        onImport(importedData)
-        setImporting(false)
-        setSuccess(false)
-        setImportedCount(0)
-        onOpenChange(false)
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ''
+      timeoutRef.current = setTimeout(() => {
+          // Guard: only proceed if dialog is still open
+        if (open) {
+          onImport(importedData)
+          setImporting(false)
+          setSuccess(false)
+          setImportedCount(0)
+          handleOpenChange(false)
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
         }
+        timeoutRef.current = null
       }, 1000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to import file. Please check the file format.')
@@ -164,7 +196,7 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -236,15 +268,7 @@ export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps
         <DialogFooter>
           <Button
             variant="outline"
-            onClick={() => {
-              onOpenChange(false)
-              setError(null)
-              setSuccess(false)
-              setImportedCount(0)
-              if (fileInputRef.current) {
-                fileInputRef.current.value = ''
-              }
-            }}
+            onClick={() => handleOpenChange(false)}
           >
             Cancel
           </Button>
