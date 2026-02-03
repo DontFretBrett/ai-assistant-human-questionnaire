@@ -8,15 +8,17 @@ import { CategoryNav } from '@/components/CategoryNav'
 import { QuestionCard } from '@/components/QuestionCard'
 import { ProgressHeader } from '@/components/ProgressHeader'
 import { ExportDialog } from '@/components/ExportDialog'
+import { ImportDialog } from '@/components/ImportDialog'
 import { Disclaimer } from '@/components/Disclaimer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileDown, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun } from 'lucide-react'
+import { FileDown, FileUp, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun } from 'lucide-react'
 
 function App() {
   const [data, setData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
   const [activeCategory, setActiveCategory] = useState<CategoryId>('basics')
   const [exportOpen, setExportOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
   const currentCategory = categories.find(c => c.id === activeCategory)
@@ -32,6 +34,14 @@ function App() {
     if (window.confirm('Are you sure you want to clear all your responses? This cannot be undone.')) {
       setData({})
     }
+  }
+
+  const handleImport = (importedData: QuestionnaireData) => {
+    // Merge imported data with existing data (imported data takes precedence)
+    setData(prev => ({
+      ...prev,
+      ...importedData,
+    }))
   }
 
   const handleNextCategory = () => {
@@ -76,7 +86,7 @@ function App() {
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Help AI assistants understand you better by answering questions about yourself.
-            Your responses are only stored in your browser and can be exported as a document.
+            Your responses are only stored in your browser and can be exported or imported as a document.
           </p>
         </motion.header>
 
@@ -91,10 +101,16 @@ function App() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2 items-center justify-between">
-                <Button onClick={() => setExportOpen(true)} className="gap-2">
-                  <FileDown className="w-4 h-4" />
-                  Export for AI Assistant
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={() => setImportOpen(true)} variant="outline" className="gap-2">
+                    <FileUp className="w-4 h-4" />
+                    Import
+                  </Button>
+                  <Button onClick={() => setExportOpen(true)} className="gap-2">
+                    <FileDown className="w-4 h-4" />
+                    Export
+                  </Button>
+                </div>
                 <Button variant="ghost" size="sm" onClick={handleReset} className="gap-2 text-muted-foreground">
                   <RotateCcw className="w-4 h-4" />
                   Reset All
@@ -205,6 +221,12 @@ function App() {
         open={exportOpen}
         onOpenChange={setExportOpen}
         data={data}
+      />
+
+      <ImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImport={handleImport}
       />
     </div>
   )
