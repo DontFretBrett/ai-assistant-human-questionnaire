@@ -1,16 +1,16 @@
 import { motion } from 'framer-motion'
 import { Progress } from '@/components/ui/progress'
-import { categories, getTotalQuestions } from '@/data/questions'
 import type { QuestionnaireData } from '@/data/types'
 
 interface ProgressHeaderProps {
   data: QuestionnaireData
+  totalQuestions: number
+  categoryCount: number
 }
 
-export function ProgressHeader({ data }: ProgressHeaderProps) {
-  const totalQuestions = getTotalQuestions()
+export function ProgressHeader({ data, totalQuestions, categoryCount }: ProgressHeaderProps) {
   const answeredQuestions = Object.values(data).filter(v => v?.trim()).length
-  const progressPercent = (answeredQuestions / totalQuestions) * 100
+  const progressPercent = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0
 
   return (
     <div className="space-y-2">
@@ -34,7 +34,7 @@ export function ProgressHeader({ data }: ProgressHeaderProps) {
       </div>
       <Progress value={progressPercent} className="h-2" />
       <div className="flex justify-between text-xs text-muted-foreground">
-        <span>{categories.length} categories</span>
+        <span>{categoryCount} categories</span>
         <span>{Math.round(progressPercent)}% complete</span>
       </div>
     </div>

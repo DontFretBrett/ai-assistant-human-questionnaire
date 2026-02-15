@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Dialog,
@@ -9,25 +9,34 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { categories } from '@/data/questions'
 import type { QuestionnaireData } from '@/data/types'
 import { Upload, Check, AlertCircle, FileText } from 'lucide-react'
+
+interface CategoryLike {
+  id: string
+  name: string
+  questions: Array<{ id: string; text: string }>
+}
 
 interface ImportDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onImport: (data: QuestionnaireData) => void
+  categories: CategoryLike[]
 }
 
-// Create a map of question text to question ID for quick lookup (static, so module-level)
-const questionTextToId = new Map<string, string>()
-categories.forEach(category => {
-  category.questions.forEach(question => {
-    questionTextToId.set(question.text, question.id)
+function buildQuestionTextToId(categories: CategoryLike[]): Map<string, string> {
+  const map = new Map<string, string>()
+  categories.forEach(category => {
+    category.questions.forEach(question => {
+      map.set(question.text, question.id)
+    })
   })
-})
+  return map
+}
 
-export function ImportDialog({ open, onOpenChange, onImport }: ImportDialogProps) {
+export function ImportDialog({ open, onOpenChange, onImport, categories }: ImportDialogProps) {
+  const questionTextToId = useMemo(() => buildQuestionTextToId(categories), [categories])
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
