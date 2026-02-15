@@ -24,7 +24,7 @@ interface ExportDialogProps {
 export function ExportDialog({ open, onOpenChange, data, mode, categories }: ExportDialogProps) {
   const [copied, setCopied] = useState(false)
 
-  const generateHumanMarkdown = (): string => {
+  const generateHumanMarkdown = (humanCategories: Category[]): string => {
     const lines: string[] = [
       '# About Me - AI Assistant Context',
       '',
@@ -32,7 +32,7 @@ export function ExportDialog({ open, onOpenChange, data, mode, categories }: Exp
       '',
     ]
 
-    for (const category of categories as Category[]) {
+    for (const category of humanCategories) {
       const answeredQuestions = category.questions.filter(q => data[q.id]?.trim())
       if (answeredQuestions.length === 0) continue
 
@@ -58,8 +58,8 @@ export function ExportDialog({ open, onOpenChange, data, mode, categories }: Exp
     return lines.join('\n')
   }
 
-  const generateAgentMarkdown = (): string => {
-    const agentName = (data as QuestionnaireData)['identity_name']?.trim() || 'Agent'
+  const generateAgentMarkdown = (agentCategories: AgentCategory[]): string => {
+    const agentName = data['identity_name']?.trim() || 'Agent'
     const lines: string[] = [
       `# Agent Profile - ${agentName}`,
       '',
@@ -67,7 +67,7 @@ export function ExportDialog({ open, onOpenChange, data, mode, categories }: Exp
       '',
     ]
 
-    for (const category of categories as AgentCategory[]) {
+    for (const category of agentCategories) {
       const answeredQuestions = category.questions.filter(q => data[q.id]?.trim())
       if (answeredQuestions.length === 0) continue
 
@@ -93,7 +93,15 @@ export function ExportDialog({ open, onOpenChange, data, mode, categories }: Exp
   }
 
   const generateMarkdown = (): string => {
-    return mode === 'agent' ? generateAgentMarkdown() : generateHumanMarkdown()
+    // Type guard: Use mode to safely narrow the categories type
+    // The parent component (App.tsx) ensures mode and categories are always in sync
+    if (mode === 'agent') {
+      // When mode is 'agent', categories is guaranteed to be AgentCategory[]
+      return generateAgentMarkdown(categories as AgentCategory[])
+    } else {
+      // When mode is 'human', categories is guaranteed to be Category[]
+      return generateHumanMarkdown(categories as Category[])
+    }
   }
 
   const handleCopy = async () => {
