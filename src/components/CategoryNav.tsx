@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { categories } from '@/data/questions'
-import type { CategoryId, QuestionnaireData } from '@/data/types'
+import type { QuestionnaireData } from '@/data/types'
 import {
   User,
   Briefcase,
@@ -17,6 +16,12 @@ import {
   Target,
   Trophy,
   GraduationCap,
+  Bot,
+  Smile,
+  Shield,
+  MessageCircle,
+  Clock,
+  ShieldAlert,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -35,16 +40,31 @@ const iconMap: Record<string, LucideIcon> = {
   Target,
   Trophy,
   GraduationCap,
+  Bot,
+  Smile,
+  Shield,
+  MessageCircle,
+  Clock,
+  ShieldAlert,
+}
+
+export interface CategoryLike {
+  id: string
+  name: string
+  icon: string
+  description: string
+  questions: Array<{ id: string }>
 }
 
 interface CategoryNavProps {
-  activeCategory: CategoryId
-  onCategoryChange: (category: CategoryId) => void
+  categories: CategoryLike[]
+  activeCategory: string
+  onCategoryChange: (categoryId: string) => void
   data: QuestionnaireData
 }
 
-export function CategoryNav({ activeCategory, onCategoryChange, data }: CategoryNavProps) {
-  const getCategoryProgress = (categoryId: CategoryId): number => {
+export function CategoryNav({ categories, activeCategory, onCategoryChange, data }: CategoryNavProps) {
+  const getCategoryProgress = (categoryId: string): number => {
     const category = categories.find(c => c.id === categoryId)
     if (!category) return 0
 

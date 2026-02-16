@@ -1,14 +1,16 @@
-# AI Assistant Human Questionnaire
+# AI Assistant Questionnaire
 
-A modern, sleek, and privacy-focused questionnaire designed to help you build a comprehensive profile for your AI assistants.
+A modern, sleek, and privacy-focused questionnaire tool with two modes: define the **human** (for AI assistants to understand you) or define the **agent** (personality, goals, and behavior for your bot).
 
 ## 🚀 Features
 
-- **Comprehensive Categories:** Covers Work, Hobbies, Friends, Worldview, Ambitions, Accomplishments, and more.
+- **Dual Mode:** Switch between **Define Human** and **Define Agent** questionnaires.
+- **Define Human:** Comprehensive categories covering Work, Hobbies, Friends, Worldview, Ambitions, Accomplishments, and more. Export as `about-me-ai-context.md` for AI assistants.
+- **Define Agent:** OpenClaw-inspired categories for Identity, Personality, Core Truths, Boundaries, Interaction Style, Goals, Proactive Behavior, and Safety. Export as `agent-profile.md` compatible with OpenClaw and similar frameworks.
 - **Privacy First:** All data is stored locally in your browser's `localStorage`. No data ever leaves your device unless you choose to export it.
 - **Smooth UX:** Built with Framer Motion for beautiful transitions and a polished feel.
 - **Dark/Light Mode:** Full support for both themes with persistence.
-- **AI-Ready Export:** Export your completed profile as a clean Markdown file, ready to be shared with any AI assistant.
+- **AI-Ready Export:** Export completed profiles as clean Markdown files, ready to share with AI assistants or drop into agent workspaces.
 - **Modern Tech Stack:** Built with React 19, Vite, Tailwind CSS 4, and shadcn/ui.
 
 ## 🛠️ Tech Stack

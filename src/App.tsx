@@ -2,8 +2,9 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useTheme } from '@/hooks/useTheme'
-import { categories } from '@/data/questions'
-import type { CategoryId, QuestionnaireData } from '@/data/types'
+import { categories, getTotalQuestions } from '@/data/questions'
+import { agentCategories, getTotalAgentQuestions } from '@/data/agentQuestions'
+import type { QuestionnaireData, QuestionnaireMode } from '@/data/types'
 import { CategoryNav } from '@/components/CategoryNav'
 import { QuestionCard } from '@/components/QuestionCard'
 import { ProgressHeader } from '@/components/ProgressHeader'
@@ -12,16 +13,31 @@ import { ImportDialog } from '@/components/ImportDialog'
 import { Disclaimer } from '@/components/Disclaimer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileDown, FileUp, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun } from 'lucide-react'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { FileDown, FileUp, Sparkles, RotateCcw, ChevronRight, Check, Moon, Sun, User, Bot } from 'lucide-react'
 
 function App() {
-  const [data, setData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('basics')
+  const [mode, setMode] = useState<QuestionnaireMode>('human')
+  const [humanData, setHumanData] = useLocalStorage<QuestionnaireData>('questionnaire-data', {})
+  const [agentData, setAgentData] = useLocalStorage<QuestionnaireData>('agent-questionnaire-data', {})
+  const [activeCategory, setActiveCategory] = useState<string>('basics')
   const [exportOpen, setExportOpen] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
-  const currentCategory = categories.find(c => c.id === activeCategory)
+  const categoriesList = mode === 'human' ? categories : agentCategories
+  const data = mode === 'human' ? humanData : agentData
+  const setData = mode === 'human' ? setHumanData : setAgentData
+  const totalQuestions = mode === 'human' ? getTotalQuestions() : getTotalAgentQuestions()
+
+  const handleModeChange = (value: string) => {
+    const newMode = value as QuestionnaireMode
+    setMode(newMode)
+    const newCategories = newMode === 'human' ? categories : agentCategories
+    setActiveCategory(newCategories[0].id)
+  }
+
+  const currentCategory = categoriesList.find(c => c.id === activeCategory)
 
   const handleAnswerChange = useCallback((questionId: string, value: string) => {
     setData(prev => ({
@@ -37,7 +53,6 @@ function App() {
   }
 
   const handleImport = (importedData: QuestionnaireData) => {
-    // Merge imported data with existing data (imported data takes precedence)
     setData(prev => ({
       ...prev,
       ...importedData,
@@ -45,9 +60,9 @@ function App() {
   }
 
   const handleNextCategory = () => {
-    const currentIndex = categories.findIndex(c => c.id === activeCategory)
-    if (currentIndex < categories.length - 1) {
-      const nextCategory = categories[currentIndex + 1]
+    const currentIndex = categoriesList.findIndex(c => c.id === activeCategory)
+    if (currentIndex < categoriesList.length - 1) {
+      const nextCategory = categoriesList[currentIndex + 1]
       setActiveCategory(nextCategory.id)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -57,7 +72,12 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const isLastCategory = categories.findIndex(c => c.id === activeCategory) === categories.length - 1
+  const isLastCategory = categoriesList.findIndex(c => c.id === activeCategory) === categoriesList.length - 1
+
+  const headerTitle = mode === 'human' ? 'AI Assistant Human Questionnaire' : 'AI Assistant Agent Questionnaire'
+  const headerSubtitle = mode === 'human'
+    ? 'Help AI assistants understand you better by answering questions about yourself.'
+    : "Define your agent's personality, goals, and behavior. Compatible with OpenClaw and similar frameworks."
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,7 +91,7 @@ function App() {
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <Sparkles className="w-8 h-8 text-primary flex-shrink-0" />
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-center">
-                AI Assistant Human Questionnaire
+                {headerTitle}
               </h1>
             </div>
             <Button
@@ -85,9 +105,22 @@ function App() {
             </Button>
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Help AI assistants understand you better by answering questions about yourself.
-            Your responses are only stored in your browser and can be exported or imported as a document.
+            {headerSubtitle}
+            {' '}Your responses are only stored in your browser and can be exported or imported as a document.
           </p>
+
+          <Tabs value={mode} onValueChange={handleModeChange} className="w-full max-w-md mx-auto pt-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="human" className="gap-2">
+                <User className="w-4 h-4" />
+                Define Human
+              </TabsTrigger>
+              <TabsTrigger value="agent" className="gap-2">
+                <Bot className="w-4 h-4" />
+                Define Agent
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </motion.header>
 
         <motion.div
@@ -97,7 +130,11 @@ function App() {
         >
           <Card>
             <CardHeader className="pb-4">
-              <ProgressHeader data={data} />
+              <ProgressHeader
+                data={data}
+                totalQuestions={totalQuestions}
+                categoryCount={categoriesList.length}
+              />
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2 items-center justify-between">
@@ -126,6 +163,7 @@ function App() {
           transition={{ delay: 0.2 }}
         >
           <CategoryNav
+            categories={categoriesList}
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}
             data={data}
@@ -211,7 +249,7 @@ function App() {
               GitHub Repo
             </a>
             <p className="text-muted-foreground">
-              AI Assistant Human Questionnaire - Your data stays on your device.
+              AI Assistant Questionnaire - Your data stays on your device.
             </p>
           </div>
         </motion.footer>
@@ -221,12 +259,15 @@ function App() {
         open={exportOpen}
         onOpenChange={setExportOpen}
         data={data}
+        mode={mode}
+        categories={categoriesList}
       />
 
       <ImportDialog
         open={importOpen}
         onOpenChange={setImportOpen}
         onImport={handleImport}
+        categories={categoriesList}
       />
     </div>
   )
